@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>week10課題</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <header class="bg-sky-300 w-full">
+        <div class="flex justify-between items-center px-6 py-8 mx-auto mb-12">
+            <p class="text-sm text-white font-bold">WEEK10 POSSE課題</p>
+            <p class="text-2xl text-white font-bold">ユーザー検索</p>
+        </div>
+    </header>
+    <main class="max-w-4xl mx-auto">
+        <p class="text-xl font-bold mb-2">githubユーザー検索</p>
+        <input id="userName" class="p-4 rounded border border-black w-full mb-4" placeholder="ユーザー名を入力してください">
+        <button id="searchBtn" class="block px-6 py-4 mx-auto rounded font-bold text-white bg-blue-600 mx-auto hover:bg-blue-700 hover:scale-105">検索</button>
+        <div id="list" class="p-3"></div>
+
+
+    </main>
+<script>
+    const Btn = document.querySelector("#searchBtn")
+    async function load(){
+        try{
+        const list = document.querySelector("#list");
+        list.innerHTML = "";
+        const Name = document.querySelector("#userName").value;
+        const link = "https://api.github.com/users/" + Name;
+        const response = await fetch(link)
+        if (!response.ok) {
+            throw new Error("通信エラー: " + response.status);
+        }
+        const Data = await response.json();
+        console.log(Data);
+        const name = document.createElement("p");
+        name.className = "text-xl font-bold";
+        name.textContent = Data.name || "名前はありません";
+        
+        const img = document.createElement("img");
+        img.src = Data.avatar_url;
+        img.className = "w-24 h-24 rounded-full";
+
+        const bio = document.createElement("p");
+        bio.className = "text-gray-700 mt-2";
+        bio.textContent = Data.bio || "自己紹介はありません";
+
+        const followers = document.createElement("p");
+        followers.className = "mt-2";
+        followers.textContent = "フォロワー：" + Data.followers + "人";
+
+        list.appendChild(img);
+        list.appendChild(name);
+        list.appendChild(bio);
+        list.appendChild(followers);
+
+        }
+        catch(error){
+        console.error(error);
+        const list = document.querySelector("#list");
+        list.innerHTML = "";
+        const message = document.createElement("p");
+        message.className = "text-red-600 font-bold";
+        message.textContent = "ユーザーが見つかりませんでした";
+        list.appendChild(message);
+
+        }
+    }
+
+    Btn.addEventListener("click", () =>{
+        load();
+    });
+</script>
+</body>
+</html>
